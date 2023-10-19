@@ -316,7 +316,7 @@ Faites *clean* 🧹, vous êtes des grands now :
 - stockez les fichiers `.pcap` dans le dépôt git et côté rendu Markdown, vous me faites un lien vers le fichier, c'est cette syntaxe :
 
 ```markdown
-[Lien vers capture ARP](./captures/arp.pcap)
+[Lien vers capture ARP](./captures/arp.pcap) filtre Arp
 ```
 
 ---
@@ -328,7 +328,7 @@ Faites *clean* 🧹, vous êtes des grands now :
 
 > Si vous utilisez un filtre Wireshark pour mieux voir ce trafic, précisez-le moi dans le compte-rendu.
 
-[Arp.pcapng](./arp.pcap)
+[Arp](./TP1/Arp.pcapng) filtre arp
 
 ---
 
@@ -339,6 +339,7 @@ Faites *clean* 🧹, vous êtes des grands now :
 - vous effectuerez la requête DNS en ligne de commande
 
 > Si vous utilisez un filtre Wireshark pour mieux voir ce trafic, précisez-le moi dans le compte-rendu.
+[DNS](./TP1/DNS.pcapng) filtre DNS
 
 ---
 
@@ -352,6 +353,8 @@ Faites *clean* 🧹, vous êtes des grands now :
   - la fin de la connexion TCP
 
 > Si vous utilisez un filtre Wireshark pour mieux voir ce trafic, précisez-le moi dans le compte-rendu.
+
+[TCP](./TP1/TCP.pcapng) filtre TCP
 
 ---
 
