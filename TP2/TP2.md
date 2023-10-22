@@ -434,15 +434,38 @@ La conf du serveur web :
   [alexy@web ~]$ sudo mkdir -p /var/www/site_nul/html
   [alexy@web ~]$ sudo chown -R alexy:alexy /var/www/site_nul/html
   [alexy@web ~]$ sudo cat /var/www/site_nul/html/index.html
-<html>
-    <head>
-        <title>Mon super site nul</title>
-    </head>
-    <body>
-        <h1>MEOW MEOW<em>site_nul</em>. </h1>
-<p>rhasoul sa passe</p>
-    </body>
-</html>
+  <html>
+      <head>
+          <title>Mon super site nul</title>
+      </head>
+      <body>
+          <h1>MEOW MEOW<em>site_nul</em>. </h1>
+  <p>rhasoul sa passe</p>
+      </body>
+  </html>
+
+  [alexy@web ~]$ sudo cat /etc/nginx/conf.d/site_nul.conf
+  server {
+        listen 80;
+        listen [::]:80;
+
+        root /var/www/site_nul/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name site_nul www.site_nul;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+  }
+  [alexy@web ~]$ sudo nginx -t
+  nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+  nginx: configuration file /etc/nginx/nginx.conf test is successful
+  sudo systemctl restart nginx
+  [alexy@web ~]$ sudo chcon -vR system_u:object_r:httpd_sys_content_t:s0 /var/www/site_nul/
+  changing security context of '/var/www/site_nul/html/index.html'
+  changing security context of '/var/www/site_nul/html'
+  changing security context of '/var/www/site_nul/'
   ```
   - configuration NGINX
 ```
@@ -475,6 +498,19 @@ Oct 22 18:01:21 web.lan2.tp2 systemd[1]: Started The nginx HTTP and reverse prox
 ```
   - ouverture du port firewall
 ```
+  [alexy@web ~]$ sudo firewall-cmd --add-port=80/tcp      --permanent
+  success
+  [alexy@web ~]$ sudo firewall-cmd --reload
+  success
+```
+- prouvez qu'il y a un programme NGINX qui tourne derrière le port 80 de la machine (commande `ss`)
+```
+[alexy@web ~]$ sudo ss -lutnp | grep nginx
+tcp   LISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:(("nginx",pid=1574,fd=6),("nginx",pid=1573,fd=6),("nginx",pid=1572,fd=6))
+tcp   LISTEN 0      511             [::]:80           [::]:*    users:(("nginx",pid=1574,fd=7),("nginx",pid=1573,fd=7),("nginx",pid=1572,fd=7))
+```
+- prouvez que le firewall est bien configuré
+```
 [alexy@web ~]$ sudo firewall-cmd --list-all
 [sudo] password for alexy:
 public (active)
@@ -492,12 +528,28 @@ public (active)
   icmp-blocks:
   rich rules:
 ```
-- prouvez qu'il y a un programme NGINX qui tourne derrière le port 80 de la machine (commande `ss`)
-- prouvez que le firewall est bien configuré
-
 ☀️ **Sur `node1.lan1.tp2`**
 
 - éditez le fichier `hosts` pour que `site_nul.tp2` pointe vers l'IP de `web.lan2.tp2`
+```
+[alexy@node1Lan1 ~]$ sudo cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+10.1.2.12 site_nul.tp2
+```
 - visitez le site nul avec une commande `curl` et en utilisant le nom `site_nul.tp2`
+```
+10.1.2.12 site_nul.tp2
+[alexy@node1Lan1 ~]$ curl site_nul.tp2
+<html>
+    <head>
+        <title>Mon super site nul</title>
+    </head>
+    <body>
+        <h1>MEOW MEOW<em>site_nul</em>. </h1>
+<p>rhasoul sa passe</p>
+    </body>
+</html>
+```	
 
 ![That's all folks](./img/thatsall.jpg)
